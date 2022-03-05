@@ -4,6 +4,7 @@ from .models import Article
 from django.shortcuts import render,redirect
 from django.http import HttpResponse,Http404
 import datetime as dt
+from .forms import NewsLetterForm
 
 
 # Create your views here.
@@ -70,6 +71,15 @@ def past_days_news(request,past_date):
 def news_today(request):
     date = dt.date.today()
     news = Article.todays_news()
+
+    if request.method == 'POST':
+        form = NewsLetterForm(request.POST)
+        if form.is_valid():
+            print('valid')
+    else:
+        form = NewsLetterForm()
+
+    return render(request, 'all-news/today-news.html', {"date": date,"news":news,"letterForm":form})
     return render(request, 'all-news/today-news.html', {"date": date,"news":news})
 
 def search_results(request):
@@ -92,3 +102,4 @@ def article(request,article_id):
     except DoesNotExist:
         raise Http404()
     return render(request,"all-news/article.html", {"article":article})
+
